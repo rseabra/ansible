@@ -1,0 +1,43 @@
+---
+- name: install packages
+  yum: name={{item}} state=present
+  with_items:
+  - firewalld
+
+- name: set interface zones
+  firewalld: zone={{item.zone}} interface={{item.if}} permanent={{item.permanent}} state={{item.state}}
+  with_items:
+  - { if: "{{trusted_if}}", permanent: true, state: 'enabled', zone: 'trusted' }
+  - { if: "{{public_if}}", permanent: true, state: 'enabled', zone: 'public' }
+  notify: firewalld-restart
+
+- name: set trusted sources
+  firewalld: zone=trusted source={{item}} immediate=true permanent=true state=enabled
+  with_items: "{{trusted_sources}}"
+  notify: firewalld-restart
+
+- name: set additional trusted sources
+  firewalld: zone=trusted source={{item}} immediate=true permanent=true state=enabled
+  with_items: "{{additional_trusted_sources | default([])}}"
+  notify: firewalld-restart
+
+- name: set public sources
+  firewalld: zone=public source={{item}} immediate=true permanent=true state=enabled
+  with_items: "{{public_sources}}"
+  notify: firewalld-restart
+
+- name: set trusted public sources
+  firewalld: immediate=yes permanent=true state=enabled rich_rule='rule family="ipv4" source address="{{item}}" accept'
+  with_items: "{{trusted_public_sources | default([])}}"
+  notify: firewalld-restart
+
+- name: remove unecessary services from public zone
+  firewalld: zone=public service={{item}} immediate=true permanent=true state=disabled
+  with_items:
+  - dhcpv6-client
+  - ssh
+  notify: firewalld-restart
+
+- name: set public ports
+  firewalld: zone=public port={{item}} immediate=yes permanent=true state=enabled
+  with_items: "{{public_ports | default([])}}"

@@ -1,0 +1,39 @@
+# VARIABLE: trusted_sources
+#
+# administration systems (or jump hosts), as well as monitoring servers,
+# all traffic from these hosts is allowed from in the trusted zone interface
+# YOU ABSOLUTELY NEED TO DEFINE THIS OR YOU WILL LOOSE ACCESS TO THE SERVER
+trusted_sources:
+- "FIXME"
+- "eg 1: 1.2.3.4"
+- "eg 2: 5.6.7.8"
+
+# VARIABLE: additional_trusted_sources (empty by default)
+#
+# define as list of cidr addresses to trust all incoming traffic from,
+# entering throuth the trusted zone interface. It's useful for adding
+# monitoring hosts or session hosts
+
+# VARIABLE: public_sources
+# Addresses bound to the public zone that will access this server.
+# Any address by default, but you'll need to open the service ports you
+# want to expose to the outside.
+public_sources:
+- "0.0.0.0/0.0.0.0"
+
+# VARIABLE: trusted_public_sources (empty by default)
+# list of cidr addresses to trust all traffic from in the public zone,
+# useful for cluster members who might ned to talk in many forms with
+# each other
+
+# VARIABLE: public_ports (empty by default)
+# list of port/proto services to open in the public interface
+# public_ports:
+
+# VARIABLE: trusted_if
+# Interface bound to the trusted zone
+trusted_if: "eth0"
+
+# VARIABLE: public_if
+# Interface bound to the public zone
+public_if: "eth1"
